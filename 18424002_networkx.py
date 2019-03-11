@@ -1,6 +1,7 @@
 from sys import argv
 import networkx as nx
 import numpy as np
+import queue
 
 script, option_arg, input_arg, output_arg = argv
 def docTapTinMaTranKe(inputFile):
@@ -33,11 +34,23 @@ def connectedComponentsDFS(graph):
 	return vertexLabel
 
 #Tim thanh phan lien thong bang BFS
-def ganNhanBFS():
-	pass
-
-def connectedComponentsBFS():
-	pass
+def ganNhanBFS(graph, vertexLabel, u, label):
+	Q = queue.Queue()
+	Q.put(u)
+	while not Q.empty():
+		qGetNode = Q.get()
+		vertexLabel[qGetNode] = label
+		for neighQGet in nx.all_neighbors(graph, qGetNode):
+			if vertexLabel[neighQGet] == 0:
+				Q.put(neighQGet)
+def connectedComponentsBFS(graph):
+	label = 0
+	vertexLabel = np.zeros(len(graph))
+	for i in range(len(graph)):
+		if vertexLabel[i] == 0:
+			label += 1
+			ganNhanBFS(graph, vertexLabel, i, label)
+	return vertexLabel
 
 def printArrayToFile(outputFile, array):
 	for item in array:
@@ -76,8 +89,13 @@ else:
 		danhSachDaGanNhan = connectedComponentsDFS(G)
 		output_file = open(output_arg, "wt")
 		putToOutput(output_file, danhSachDaGanNhan)
-
-	
+		
+	elif option_arg == 'b':
+		print('Su dung BFS!!!')
+		danhSachDaGanNhan = connectedComponentsBFS(G)
+		print('danh sach da gan Nhan:', danhSachDaGanNhan)
+		output_file = open(output_arg, "wt")
+		putToOutput(output_file, danhSachDaGanNhan)		
  #Xu ly truong hop dung DFS
 # print(list(nx.dfs_preorder_nodes(G, source=0)))
 # print(list(nx.dfs_preorder_nodes(G, source=1)))
